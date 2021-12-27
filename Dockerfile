@@ -70,4 +70,4 @@ VOLUME /app/node_modules /app/.bundle /app/vendor
 
 COPY . /app
 
-CMD bin/rails server -b 0.0.0.0 -p ${PORT}
+CMD bin/rails assets:precompile && bin/rails server -b 0.0.0.0 -p ${PORT}
