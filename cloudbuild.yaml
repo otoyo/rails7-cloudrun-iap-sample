@@ -1,0 +1,48 @@
+steps:
+  - id: "build image"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: 'bash'
+    args: ["-c", "docker build --build-arg MASTER_KEY=$$RAILS_KEY -t gcr.io/${PROJECT_ID}/${_SERVICE_NAME} . "]
+    secretEnv: ["RAILS_KEY"]
+
+  - id: "push image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"]
+
+  - id: "apply migrations"
+    name: "gcr.io/google-appengine/exec-wrapper"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "/buildstep/execute.sh -i gcr.io/${PROJECT_ID}/${_SERVICE_NAME} -s ${PROJECT_ID}:${_REGION}:${_CLOUDSQL_INSTANCE} -e RAILS_MASTER_KEY=$$RAILS_KEY -- bin/rails db:migrate"
+      ]
+    secretEnv: ["RAILS_KEY"]
+
+  - id: "deploy container image to Cloud Run"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "deploy",
+        "${_SERVICE_NAME}",
+        "--image",
+        "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}",
+        "--region",
+        "${_REGION}",
+      ]
+
+substitutions:
+  _CLOUDSQL_INSTANCE: rails7
+  _REGION: asia-northeast1
+  _SERVICE_NAME: rails7-cloudrun-sample
+  _SECRET_NAME: rails-master-key
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/${PROJECT_ID}/secrets/${_SECRET_NAME}/versions/latest
+    env: RAILS_KEY
+
+images:
+  - "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"
