@@ -55,4 +55,5 @@ production:
   database: rails7_cloudrun_sample
   username: rails7
   password: <%= Rails.application.credentials.production[:db_password] %>
-  host: /cloudsql/rails7-cloudrun-sample:asia-northeast1:rails7
+  host: localhost
+  socket: /cloudsql/rails7-cloudrun-sample:asia-northeast1:rails7
