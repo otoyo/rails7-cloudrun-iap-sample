@@ -36,7 +36,7 @@ steps:
 substitutions:
   _CLOUDSQL_INSTANCE: rails7
   _REGION: asia-northeast1
-  _SERVICE_NAME: rails7-cloudrun-sample
+  _SERVICE_NAME: rails7-cloudrun-iap-sample
   _SECRET_NAME: rails-master-key
 
 availableSecrets:

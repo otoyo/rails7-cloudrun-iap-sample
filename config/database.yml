@@ -56,4 +56,4 @@ production:
   username: rails7
   password: <%= Rails.application.credentials.production[:db_password] %>
   host: localhost
-  socket: /cloudsql/rails7-cloudrun-sample:asia-northeast1:rails7
+  socket: /cloudsql/rails7-cloudrun-iap-sample:asia-northeast1:rails7
